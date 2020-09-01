@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const app = require('express')();
 const FBAuth = require('./utils/fbAuth');
 
-const {db} = request('./utils/admin');
+const { db } = request('./utils/admin');
 
 const {
   getAllScreams,
@@ -33,25 +33,25 @@ app.get("/scream/:screamId/like", FBAuth, likeScream);
 app.get("/scream/:screamId/unlike", FBAuth, unlikeScream);
 app.post("/scream/:screamId/comment", FBAuth, commentOnScream);
 
-
 // Users Route
 app.post("/signup", signup);
 app.post("/login", login);
 app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);
-app.get("/user", FBAuth, getAuthenticatedUser);
+app.get("/user", FBAuth, getAuthenticatedUser);  
 app.get("/user/:handle", getUserDetails);
 app.post("/notifications", FBAuth, markNotificationsRead);
+
 exports.api = functions.region('asia-northeast3').https.onRequest(app); 
 
 exports.createNotificationOnLike = functions
   .region("asia-northeast3")
   .firestore.document("likes/{id}")
   .onCreate((snapshot) => {
-    db.doc(`/screams/${snapshot.data().screamId}`)
+    return db.doc(`/screams/${snapshot.data().screamId}`)
       .get()
       .then((doc) => {
-        if (doc.exists) {
+        if (doc.exists && doc.data().userHandle !== snapshot.data().userHandle) {
           return db.doc(`/notifications/${snapshot.id}`).set({
             createdAt: new Date().toISOString(),
             recipient: doc.data().userHandle,
@@ -61,9 +61,7 @@ exports.createNotificationOnLike = functions
             screamId: doc.id,
           });
         }
-      })
-      .then(() => {
-        return;
+    
       })
       .catch((err) => {
         console.error(err);
@@ -72,14 +70,11 @@ exports.createNotificationOnLike = functions
   });
 
 exports.deleteNotificationOnUnlide = functions
-  .reggions("asia-northeast3")
+  .region("asia-northeast3")
   .firestore.document("likes/{id}")
   .onDelete((snapshot) => {
-    db.doc(`/notifications/${snapshot.id}`)
+    return db.doc(`/notifications/${snapshot.id}`)
       .delete()
-      .then(() => {
-        return;
-      })
       .catch((err) => {
         console.error(err);
         return;
@@ -87,13 +82,13 @@ exports.deleteNotificationOnUnlide = functions
   });
 
 exports.createNotificationOnComment = functions
-  .reggions("asia-northeast3")
+  .region("asia-northeast3")
   .firestore.document("comments/{id}")
   .onCreate((snapshot) => {
-    db.doc(`/screams/${snapshot.data().screamId}`)
+    return db.doc(`/screams/${snapshot.data().screamId}`)
       .get()
       .then((doc) => {
-        if (doc.exists) {
+        if (doc.exists && doc.data().userHandle !== snapshot.data().userHandle) {
           return db.doc(`/notifications/${snapshot.id}`).set({
             createdAt: new Date().toISOString(),
             recipient: doc.data().userHandle,
@@ -103,12 +98,34 @@ exports.createNotificationOnComment = functions
             screamId: doc.id,
           });
         }
-      })
-      .then(() => {
-        return;
+      
       })
       .catch((err) => {
         console.error(err);
         return;
       });
+  });
+
+
+exports.onUserImageChange = functions
+  .region("asia-northeast3")
+  .firestore.document("/users/{userId}")
+  .onUpdate((change) => {
+    console.log(change.before.data());
+    console.log(change.after.data());
+    if (change.before.data().imageUrl !== change.after.data().imageUrl) {
+      console.log("image has changed");
+      let batch = db.batch();
+      return db
+        .collection("screams")
+        .where("userhandle", "==", change.before.data().handle)
+        .get()
+        .then((data) => {
+          data.forEach((doc) => {
+            const scream = db.doc(`/screams/${doc.id})`);
+            batch.update(scream, { userImage: change.after.data().imageUrl });
+          });
+          return batch.commit();
+        });
+    }
   });

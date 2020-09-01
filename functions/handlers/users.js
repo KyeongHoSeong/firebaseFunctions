@@ -60,7 +60,7 @@ exports.signup = (req, res) => {
       if(err.code === 'auth/email-already-in-use'){
           res.status(400).json( {email: 'Email is already is use'})
       } else {
-        return res.status(500).json({ error: err.code });
+        return res.status(500).json({ general: 'somethin went wrong, try again' });
         }
     });
 }
@@ -252,4 +252,21 @@ exports.uploadImage = (req, res) => {
       });
   });
   busboy.end(req.rawBody);
+};
+
+exports.markNotificationsRead = (req, res) => {
+  let batch = db.batch();
+  req.body.forEach((notification) => {
+    const notification = db.doc(`/notifications/${notificationId}`);
+    batch.update(notification, { read: ture });
+  });
+  batch
+    .commit()
+    .then(() => {
+      return res.json({ message: "notif..marked read" });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
 };
