@@ -1,4 +1,6 @@
-# step 12: add user details
+# step 13: get Authenticated User info
+
+# step 12: add additional user details
 +bio:
 +website:
 +location:

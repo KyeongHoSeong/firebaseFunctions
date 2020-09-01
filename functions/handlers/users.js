@@ -98,7 +98,32 @@ exports.login = (req, res) => {
       });
 }; 
   
- 
+exports.getAuthenticatedUser = (req, res) => {
+  let userData = {};
+
+  db.doc(`/users/${req.user.handle}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        userData.credentials = doc.data();
+        return db
+          .collection("likes")
+          .where("userHandle", "==", req.user.handle)
+          .get();
+      }
+    })
+    .then((data) => {
+      userData.likes = [];
+      data.forEach((doc) => {
+        userData.likes.push(doc.data());
+      });
+      
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+}; 
 
 exports.addUserDetails = (req, res) => {
   let userDetails = reduceUserDetails(req.body);
