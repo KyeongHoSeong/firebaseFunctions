@@ -31,28 +31,7 @@ exports.validateSignupData = (data) => {
   };
 };
 
-  /*
-      let errors = {};
-  
-  if(isEmpty(data.email)) {
-    errors.email ='Email must not be empty';
-  } else if(!isEmail(data.email)) {
-    errors.email = 'Musb be a valid email address';
-  };
 
-  if(isEmpty(data.password)) 
-    errors.password = 'Must not be empty';
-  if(data.password !== data.confirmPassword) 
-    errors.confirmPassword = 'passwords must match';
-  if(isEmpty(data.handle)) 
-    errors.handle = 'Must not be empty';
-
-    return{
-        errors, 
-        valid: Object.keys(errors).length === 0 ? true : false
-    }    
-  };
-  */
 
 exports.validateLoginData = (data) => {
   let errors = {};
@@ -64,6 +43,7 @@ exports.validateLoginData = (data) => {
     valid: Object.keys(errors).length === 0 ? true : false,
   };
 };    
+
 
 exports.reduceUserDetails = (data) => {
   let userDetails = {};
