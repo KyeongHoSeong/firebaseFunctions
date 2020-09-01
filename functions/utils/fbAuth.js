@@ -28,14 +28,16 @@ module.exports = (req, res, next) => {
          .get();
      })
      .then((data) => { // get user.hadle, and post to user package
+      console.log(data.docs[0].data().handle);
        req.user.handle = data.docs[0].data().handle;
+       req.user.imageUrl = data.docs[0].data().imageUrl;
        return next();
      })
-     .catch((err) => {
+     .catch((err) => { 
        console.error('Error   while verifying token', err);
        return res.status(403).json(err);
      });
-};
+}; 
 
 /*(req, res, next) => {
     let idToken;

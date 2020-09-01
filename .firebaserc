@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "fireactplayground"
+    "default": "fireactplayground",
+    "firereact": "firereact-f2000"
   }
 }
