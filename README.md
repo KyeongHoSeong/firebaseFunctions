@@ -1,4 +1,6 @@
 # step 20:
+user image changed
+markNotificationsRead
 
 # step 19: notifi..basis
 # step 18: del
