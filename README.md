@@ -1,3 +1,7 @@
+#step 14: get one scream
+get onescream (comments)
+get comments by commentId
+
 # step 13: get Authenticated User info
 
 # step 12: add additional user details
