@@ -1,4 +1,20 @@
-#step 14: get one scream
+# step 16: add 'likes'
+db.schema:
+likes: [
+      {
+        userHandle: 'user',
+        screamId: 'hh7O5oWfWucVzGbHH2pa'
+      },
+      {
+        userHandle: 'user',
+        screamId: '3IOnFoQexRcofs5OhBXO'
+      }
+    ]
+  };
+
+# step 15: comment on scream
+
+# step 14: get one scream
 get onescream (comments)
 get comments by commentId
 
