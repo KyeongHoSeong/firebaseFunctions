@@ -1,4 +1,9 @@
-# step 16: add 'likes'
+# step 20:
+
+# step 19: notifi..basis
+# step 18: del
+# step 17: unlike 
+# step 16~18: add 'likes', 
 db.schema:
 likes: [
       {
